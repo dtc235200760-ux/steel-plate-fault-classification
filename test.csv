@@ -1,0 +1,11 @@
+import pandas as pd
+
+# Tạo 3 dòng dữ liệu kiểm thử gồm 27 đặc trưng
+data = [[0.0] * 27, [1.0] * 27, [2.0] * 27]
+
+columns = [f"Feature_{i}" for i in range(1, 28)]
+
+df = pd.DataFrame(data, columns=columns)
+df.to_csv("test.csv", index=False)
+
+print("Đã tạo file test.csv")

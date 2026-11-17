@@ -1,0 +1,14 @@
+﻿Nhan_thuc_te,Nhan_du_doan_nham,So_mau
+Other_Faults,Bumps,14
+Other_Faults,Pastry,9
+Bumps,Other_Faults,8
+Pastry,Bumps,4
+Pastry,Other_Faults,4
+Bumps,Pastry,3
+Other_Faults,Stains,3
+Other_Faults,K_Scratch,2
+K_Scratch,Other_Faults,2
+Z_Scratch,Bumps,2
+Stains,Other_Faults,2
+Z_Scratch,Other_Faults,2
+Other_Faults,Z_Scratch,1

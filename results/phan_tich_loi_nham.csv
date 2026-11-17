@@ -1,0 +1,15 @@
+﻿Loai_loi_thuc_te,Loai_loi_du_doan,So_luong_nham
+Bumps,Other_Faults,13
+Other_Faults,Bumps,10
+Pastry,Bumps,8
+Other_Faults,Pastry,5
+Pastry,Other_Faults,5
+K_Scratch,Other_Faults,4
+Z_Scratch,Other_Faults,4
+Stains,Other_Faults,2
+Bumps,Pastry,2
+Other_Faults,K_Scratch,2
+Other_Faults,Stains,2
+Bumps,Stains,1
+Other_Faults,Z_Scratch,1
+Z_Scratch,Bumps,1
