@@ -1,0 +1,31 @@
+PHÂN TÍCH VÀ SO SÁNH KẾT QUẢ CÁC MÔ HÌNH
+
+**So sánh theo Accuracy:**
+
+Gradient Boosting và Random Forest cùng đạt Accuracy cao nhất, ở mức 0.8082 (80.82%). Điều này cho thấy hai mô hình có tỷ lệ dự đoán đúng tổng thể tương đương nhau trên 292 mẫu kiểm thử.
+
+Các mô hình được xếp theo Accuracy giảm dần: Gradient Boosting: 0.8082 (80.82%), Random Forest: 0.8082 (80.82%), Extra Trees: 0.7945 (79.45%), KNN: 0.7774 (77.74%), SVM: 0.7705 (77.05%). SVM có Accuracy thấp nhất trong các mô hình được thử nghiệm.
+
+**So sánh theo Precision:**
+
+Gradient Boosting đạt Precision cao nhất với giá trị 0.8356 (83.56%). Thứ tự kết quả các mô hình: Gradient Boosting: 0.8356 (83.56%), Random Forest: 0.8336 (83.36%), Extra Trees: 0.8156 (81.56%), SVM: 0.8145 (81.45%), KNN: 0.7661 (76.61%).
+
+Kết quả cho thấy mô hình đứng đầu có lợi thế về Precision, tức là có khả năng hạn chế các trường hợp dự đoán một mẫu thuộc lớp lỗi khi mẫu đó thực tế không thuộc lớp này.
+
+**So sánh theo Recall:**
+
+Random Forest đạt Recall cao nhất với giá trị 0.7995 (79.95%). Thứ tự kết quả các mô hình: Random Forest: 0.7995 (79.95%), KNN: 0.7971 (79.71%), Extra Trees: 0.7932 (79.32%), Gradient Boosting: 0.7836 (78.36%), SVM: 0.7684 (76.84%).
+
+Recall là chỉ số quan trọng trong bài toán phát hiện lỗi vì phản ánh khả năng nhận diện các mẫu thực sự thuộc một lớp lỗi. Do đó, mô hình đứng đầu có kết quả tốt nhất theo chỉ số Recall trên tập kiểm thử.
+
+**So sánh theo F1-score:**
+
+Random Forest đạt F1-score cao nhất với giá trị 0.8107 (81.07%). Thứ tự kết quả các mô hình: Random Forest: 0.8107 (81.07%), Gradient Boosting: 0.8072 (80.72%), Extra Trees: 0.8016 (80.16%), SVM: 0.7879 (78.79%), KNN: 0.7742 (77.42%).
+
+F1-score thể hiện sự cân bằng giữa Precision và Recall trên các lớp. Vì vậy, mô hình đứng đầu theo F1 Macro có kết quả cân bằng tốt nhất giữa hai chỉ số này.
+
+**So sánh theo ROC-AUC:**
+
+Random Forest đạt ROC-AUC cao nhất với giá trị 0.9711. Thứ tự kết quả các mô hình: Random Forest: 0.9711, Extra Trees: 0.9685, Gradient Boosting: 0.9654, SVM: 0.9589, KNN: 0.9531.
+
+Các giá trị ROC-AUC cho thấy khả năng phân biệt các lớp của các mô hình trên tập kiểm thử. Giá trị càng gần 1 thì khả năng phân biệt giữa các lớp càng tốt.
