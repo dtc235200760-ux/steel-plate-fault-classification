@@ -751,7 +751,6 @@ elif page == "Dự đoán lỗi":
     # -----------------------------------------------------
 
     if input_mode == "Chọn mẫu từ dữ liệu có sẵn":
-
         st.markdown("### Chọn loại lỗi")
 
         available_classes = sorted(
@@ -921,23 +920,24 @@ elif page == "Dự đoán lỗi":
                     for prediction in results.values()
                 )
 
-                st.markdown(
-                    f"""
-                    <div class="success-card">
-                        <h3>Đối chiếu với nhãn thực tế</h3>
-                        <p><b>Mẫu:</b>
-                        {html.escape(sample_description)}</p>
+                                # Hiển thị thông tin đối chiếu với nhãn thực tế
+                with st.container(border=True):
 
-                        <p><b>Nhãn thực tế:</b>
-                        {html.escape(actual_label)} -
-                        {html.escape(translate_label(actual_label))}</p>
+                    st.subheader("✅ Đối chiếu với nhãn thực tế")
 
-                        <p><b>Số mô hình dự đoán đúng:</b>
-                        {correct_count}/{len(results)}</p>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
+                    st.write(
+                        f"**Mẫu:** {sample_description}"
+                    )
+
+                    st.write(
+                        f"**Nhãn thực tế:** {actual_label} - "
+                        f"{translate_label(actual_label)}"
+                    )
+
+                    st.write(
+                        f"**Số mô hình dự đoán đúng:** "
+                        f"{correct_count}/{len(results)}"
+                    )
 
                 if correct_count == len(results):
 
@@ -1004,8 +1004,6 @@ elif page == "Dự đoán lỗi":
                 fig,
                 width="stretch"
             )
-
-
 
 # =========================================================
 # 10. TRANG DỰ ĐOÁN HÀNG LOẠT
