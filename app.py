@@ -6,6 +6,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
+import base64
 
 from sklearn.metrics import (
     accuracy_score,
@@ -154,17 +155,22 @@ def style_fig(fig, height=400):
 # =========================================================
 # 1. CẤU HÌNH
 # =========================================================
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+LOGO_PATH = os.path.join(BASE_DIR, "logo.png")
+
+# Đọc và mã hóa ảnh logo
+with open(LOGO_PATH, "rb") as f:
+    logo_base64 = base64.b64encode(f.read()).decode("utf-8")
 
 st.set_page_config(
     page_title="Phân loại lỗi bề mặt thép",
-    page_icon="🏭",
+    page_icon=LOGO_PATH,
     layout="wide"
 )
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_DIR = os.path.join(BASE_DIR, "models")
 RESULT_DIR = os.path.join(BASE_DIR, "results")
-
 # Chỉ sử dụng file dữ liệu này cho chức năng chọn mẫu
 DATA_FILE = os.path.join(
     RESULT_DIR,
@@ -236,75 +242,255 @@ FEATURE_GROUPS = {
     ]
 }
 
-
 # =========================================================
 # 2. GIAO DIỆN CSS
 # =========================================================
-
 st.markdown("""
 <style>
-
+/* Nền tổng thể */
 .stApp {
-    background: #f4f8ff;
-    color: #172b4d;
+    background-color: #f3f7fc;
+    color: #1e293b;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 [data-testid="stDecoration"] {
     display: none !important;
 }
 
+/* Thanh điều hướng bên trái (Sidebar) */
 [data-testid="stSidebar"] {
-    background: #eaf2ff;
+    background-color: #ffffff;
+    border-right: 1px solid #e2e8f0;
 }
 
-[data-testid="stSidebar"] * {
-    color: #17365d;
+.sidebar-brand {
+    text-align: center;
+    padding: 15px 10px 20px 10px;
+    border-bottom: 1px solid #f1f5f9;
+    margin-bottom: 15px;
 }
 
-.main-title {
-    background: linear-gradient(110deg, #1677ff, #13b8a6);
-    padding: 24px;
-    border-radius: 16px;
-    color: white;
-    margin-bottom: 22px;
+.sidebar-brand-icon {
+    font-size: 45px;
+    color: #1677ff;
+    margin-bottom: 5px;
 }
 
-.main-title h1 {
-    color: white;
+.sidebar-brand-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f172a;
     margin: 0;
 }
 
-.main-title p {
-    color: #eaf6ff;
-    margin-bottom: 0;
+.sidebar-brand-sub {
+    font-size: 16px;
+    color: #64748b;
+    margin-top: 2px;
 }
+
+/* Style lại nút Radio trên Sidebar thành dạng menu bo tròn */
+[data-testid="stSidebar"] div[role="radiogroup"] > label {
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    transition: all 0.2s;
+}
+
+/* Ép cỡ chữ to cho các mục menu bên trong Sidebar */
+[data-testid="stSidebar"] div[role="radiogroup"] label p,
+[data-testid="stSidebar"] div[role="radiogroup"] label span,
+[data-testid="stSidebar"] div[role="radiogroup"] label div {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: #1e293b !important;
+}
+
+[data-testid="stSidebar"] div[role="radiogroup"] > label:hover {
+    background-color: #eff6ff;
+}
+
+/* Khung Header chính (Chỉ chứa 1 ảnh bên trái) */
+.steel-header {
+    background: linear-gradient(120deg, #e0f2fe 0%, #f0f9ff 60%, #e0e7ff 100%);
+    padding: 22px 28px;
+    border-radius: 16px;
+    border: 1px solid #bae6fd;
+    margin-bottom: 22px;
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.06);
+}
+
+.steel-header-content {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.steel-logo {
+    width: 250px;        
+    height: 200px;       
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    border: 2px solid #ffffff;
+    flex-shrink: 0;
+}
+
+.steel-title {
+    color: #0f172a;
+    font-size: 28px !important;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: 0.3px;
+}
+
+.steel-tagline {
+    color: #0284c7;
+    font-size: 20px !important;
+    font-weight: 600;
+    font-style: italic;
+    margin: 4px 0 2px 0;
+}
+
+/* Tăng cỡ chữ phụ đề dưới tiêu đề chính */
+.steel-subtitle {
+    color: #334155 !important;
+    font-size: 18px !important;
+    font-weight: 500 !important;
+    margin-top: 6px !important;
+}
+
+/* 4 Thẻ chỉ số (KPI Cards) */
+.kpi-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    border: 1px solid #e2e8f0;
+    margin-bottom: 18px;
+}
+
+.kpi-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+}
+
+.kpi-blue { background: #e0f2fe; color: #0284c7; }
+.kpi-teal { background: #ccfbf1; color: #0d9488; }
+.kpi-amber { background: #fef3c7; color: #d97706; }
+.kpi-purple { background: #f3e8ff; color: #7e22ce; }
+
+/* Tăng cỡ chữ nhãn của 4 thẻ chỉ số */
+.kpi-label {
+    font-size: 17px !important;
+    color: #475569 !important;
+    font-weight: 700 !important;
+    margin-bottom: 4px !important;
+}
+
+.kpi-value {
+    font-size: 28px !important;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.1;
+}
+
+/* Khung nội dung trắng (Card Container) */
+.dashboard-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px 24px;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+    border: 1px solid #e2e8f0;
+    margin-bottom: 20px;
+    height: 100%;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-sub {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 14px;
+}
+
+/* Danh sách check thông tin dữ liệu */
+.info-list {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 0 0;
+}
+
+.info-list li {
+    font-size: 15px;
+    color: #334155;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+/* Lưới 5 mô hình học máy */
+.ml-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.ml-badge {
+    border-radius: 12px;
+    padding: 14px 6px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 13px;
+    color: #1e293b;
+}
+
+.ml-icon {
+    font-size: 22px;
+    display: block;
+    margin-bottom: 6px;
+}
+
+/* Các thẻ thông báo cho trang con */
+.main-title {
+    background: linear-gradient(120deg, #0284c7, #0d9488);
+    padding: 20px 24px;
+    border-radius: 14px;
+    color: white;
+    margin-bottom: 20px;
+}
+.main-title h1 { color: white; margin: 0; font-size: 22px; }
+.main-title p { color: #e0f2fe; margin: 4px 0 0 0; font-size: 15px; }
 
 .info-card {
     background: white;
     padding: 18px;
     border-radius: 13px;
-    border: 1px solid #e1eaf7;
+    border: 1px solid #e2e8f0;
     margin-bottom: 12px;
 }
-
-.success-card {
-    background: #e8fff4;
-    border-left: 5px solid #16a36a;
-    padding: 18px;
-    border-radius: 10px;
-    margin: 12px 0;
-}
-
-.warning-card {
-    background: #fff7e6;
-    border-left: 5px solid #f0a020;
-    padding: 16px;
-    border-radius: 10px;
-}
-
 </style>
 """, unsafe_allow_html=True)
-
 
 # =========================================================
 # 3. TẢI MÔ HÌNH
@@ -600,48 +786,42 @@ def get_predictions_by_class():
 # =========================================================
 # 6. THANH ĐIỀU HƯỚNG
 # =========================================================
-
-st.sidebar.title("🏭 STEEL AI")
-
-st.sidebar.caption(
-    "Hệ thống phân loại lỗi bề mặt tấm thép"
-)
+st.sidebar.markdown("""
+<div class="sidebar-brand">
+<div class="sidebar-brand-title">Hệ thống phân loại lỗi bề mặt tấm thép</div>
+<div class="sidebar-brand-sub">Thông minh hơn cho ngành thép</div>
+</div>
+""", unsafe_allow_html=True)
 
 page = st.sidebar.radio(
-    "CHỨC NĂNG",
+    "DANH MỤC",
     [
         "Tổng quan",
         "Dự đoán lỗi",
         "Dự đoán hàng loạt",
         "So sánh mô hình",
         "Thông tin hệ thống"
-    ]
+    ],
+    label_visibility="collapsed"
 )
 
 st.sidebar.divider()
-
-st.sidebar.success(
-    f"Đã tải {len(models)}/5 mô hình"
-)
-
-st.sidebar.caption(
-    f"Số mẫu dữ liệu: {len(X_all)}"
-)
-
-
+st.sidebar.success(f"Đã tải {len(models)}/5 mô hình")
+st.sidebar.caption(f"Số mẫu dữ liệu: {len(X_all):,}")
 # =========================================================
 # 7. TIÊU ĐỀ CHUNG
 # =========================================================
-
-st.markdown("""
-<div class="main-title">
-    <h1>🏭 PHÂN LOẠI LỖI BỀ MẶT TẤM THÉP</h1>
-    <p>
-        Ứng dụng học máy sử dụng đặc trưng hình học và độ sáng
-    </p>
+st.markdown(f"""
+<div class="steel-header">
+<div class="steel-header-content">
+<img class="steel-logo" src="data:image/png;base64,{logo_base64}">
+<div>
+<h1 class="steel-title">PHÂN LOẠI LỖI BỀ MẶT TẤM THÉP</h1>
+<div class="steel-subtitle">Ứng dụng học máy sử dụng đặc trưng hình học và độ sáng</div>
+</div>
+</div>
 </div>
 """, unsafe_allow_html=True)
-
 
 # =========================================================
 # 8. TRANG TỔNG QUAN
@@ -649,31 +829,52 @@ st.markdown("""
 
 if page == "Tổng quan":
 
-    st.subheader("Tổng quan hệ thống")
-
+    #  4 thẻ chỉ số KPI ---
     c1, c2, c3, c4 = st.columns(4)
 
-    c1.metric(
-        "Tổng số mẫu",
-        f"{len(X_all):,}"
-    )
+    with c1:
+        st.markdown(f"""
+        <div class="kpi-card">
+        <div class="kpi-icon kpi-blue">🗄️</div>
+        <div>
+        <div class="kpi-label">Tổng số mẫu</div>
+        <div class="kpi-value">{len(X_all):,}</div>
+        </div>
+        </div>
+        """, unsafe_allow_html=True)
 
-    c2.metric(
-        "Số đặc trưng",
-        len(feature_names)
-    )
+    with c2:
+        st.markdown(f"""
+        <div class="kpi-card">
+        <div class="kpi-icon kpi-teal">📊</div>
+        <div>
+        <div class="kpi-label">Số đặc trưng</div>
+        <div class="kpi-value">{len(feature_names)}</div>
+        </div>
+        </div>
+        """, unsafe_allow_html=True)
 
-    c3.metric(
-        "Số loại lỗi",
-        y_all.nunique()
-    )
+    with c3:
+        st.markdown(f"""
+        <div class="kpi-card">
+        <div class="kpi-icon kpi-amber">📑</div>
+        <div>
+        <div class="kpi-label">Loại lỗi</div>
+        <div class="kpi-value">{y_all.nunique()}</div>
+        </div>
+        </div>
+        """, unsafe_allow_html=True)
 
-    c4.metric(
-        "Số mô hình",
-        len(models)
-    )
-
-    st.markdown("### Phân bố các loại lỗi")
+    with c4:
+        st.markdown(f"""
+        <div class="kpi-card">
+        <div class="kpi-icon kpi-purple">🧠</div>
+        <div>
+        <div class="kpi-label">Mô hình ML</div>
+        <div class="kpi-value">{len(models)}</div>
+        </div>
+        </div>
+        """, unsafe_allow_html=True)
 
     class_counts = (
         y_all.value_counts()
@@ -681,50 +882,82 @@ if page == "Tổng quan":
         .reset_index(name="Số lượng")
     )
 
-    class_counts["Tên lỗi"] = (
-        class_counts["Loại lỗi"].apply(
-            translate_label
-        )
-    )
+    chart_colors = ["#2563eb", "#14b8a6", "#f59e0b", "#a855f7", "#ef4444", "#22c55e", "#64748b"]
 
     fig = px.bar(
         class_counts,
-        x="Tên lỗi",
+        x="Loại lỗi",
         y="Số lượng",
-        color="Tên lỗi",
+        color="Loại lỗi",
         text="Số lượng",
-        title="Số lượng mẫu theo từng loại lỗi"
+        color_discrete_sequence=chart_colors
+    )
+
+    fig.update_traces(
+        textposition="outside",
+        textfont=dict(size=13, color="#1e293b", family="Arial"),
+        marker_line_width=0
     )
 
     fig.update_layout(
+        height=320,
         plot_bgcolor="white",
         paper_bgcolor="white",
-        showlegend=False
+        showlegend=False,
+        xaxis_title="",
+        yaxis_title="Số lượng mẫu",
+        margin=dict(l=10, r=10, t=25, b=10),
+        yaxis=dict(gridcolor="#f1f5f9", range=[0, class_counts["Số lượng"].max() * 1.15])
     )
 
-    st.plotly_chart(
-        fig,
-        width="stretch"
-    )
+    st.plotly_chart(fig, use_container_width=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown("### Dữ liệu mẫu")
+    #  2 cột Thông tin dữ liệu & 5 mô hình học máy ---
+    col_left, col_right = st.columns([1.05, 1])
 
-    preview = X_all.copy()
+    with col_left:
+        st.markdown(f"""
+        <div class="dashboard-card">
+        <div class="card-title">📈 Thông tin dữ liệu</div>
+        <ul class="info-list">
+        <li>✅ <span><b>Tập dữ liệu:</b> Steel Plates Faults (UCI)</span></li>
+        <li>✅ <span><b>Quy mô:</b> {len(X_all):,} mẫu dữ liệu, {len(feature_names)} đặc trưng hình học & độ sáng</span></li>
+        <li>✅ <span><b>7 loại lỗi:</b> Other_Faults, Bumps, K_Scratch, Z_Scratch, Pastry, Stains, Dirtiness</span></li>
+        </ul>
+        </div>
+        """, unsafe_allow_html=True)
 
-    preview["Loai_loi"] = y_all
+    with col_right:
+        st.markdown("""
+        <div class="dashboard-card">
+        <div class="card-title">🏆 5 mô hình học máy</div>
+        <div class="card-sub">Các thuật toán phân loại được huấn luyện và đối chiếu</div>
+        <div class="ml-grid">
+            <div class="ml-badge" style="background:#e0f2fe; color:#0369a1;">
+                <span class="ml-icon">💠</span>SVM
+            </div>
+            <div class="ml-badge" style="background:#ccfbf1; color:#0f766e;">
+                <span class="ml-icon">🕸️</span>KNN
+            </div>
+            <div class="ml-badge" style="background:#fef3c7; color:#b45309;">
+                <span class="ml-icon">🌲</span>Random Forest
+            </div>
+            <div class="ml-badge" style="background:#f3e8ff; color:#6b21a8;">
+                <span class="ml-icon">🌳</span>Extra Trees
+            </div>
+            <div class="ml-badge" style="background:#dcfce7; color:#15803d;">
+                <span class="ml-icon">🚀</span>Gradient Boosting
+            </div>
+        </div>
+        </div>
+        """, unsafe_allow_html=True)
 
-    st.dataframe(
-        preview.head(10),
-        width="stretch"
-    )
-
-    st.info(
-        "Hệ thống sử dụng dữ liệu dạng bảng "
-        "UCI Steel Plates Faults. Ứng dụng dự đoán "
-        "dựa trên 27 đặc trưng, không nhận dạng trực tiếp từ ảnh."
-    )
-
-
+    # --- Bảng xem trước dữ liệu (đặt trong expander cho gọn giao diện) ---
+    with st.expander("📋 Xem bảng dữ liệu mẫu (10 dòng đầu tiên)"):
+        preview = X_all.copy()
+        preview["Loai_loi"] = y_all
+        st.dataframe(preview.head(10), use_container_width=True)
 # =========================================================
 # 9. TRANG DỰ ĐOÁN LỖI
 # =========================================================
@@ -1014,12 +1247,6 @@ elif page == "Dự đoán hàng loạt":
     page_head(
         "Dự đoán lỗi từ file CSV",
         "Tải lên dữ liệu CSV chứa các đặc trưng của nhiều tấm thép."
-    )
-
-    hero(
-        "BATCH PREDICTION",
-        "Hệ thống kiểm tra cấu trúc dữ liệu, dự đoán từng dòng "
-        "và tổng hợp số lượng các loại lỗi được nhận diện."
     )
 
     # -----------------------------------------------------
@@ -2133,10 +2360,6 @@ elif page == "Thông tin hệ thống":
     )
 
     st.write(
-        f"**File dữ liệu:** `{DATA_FILE}`"
-    )
-
-    st.write(
         f"**Số mẫu hợp lệ:** {len(X_all)}"
     )
 
@@ -2176,16 +2399,6 @@ elif page == "Thông tin hệ thống":
             f"**{group_name}:** {', '.join(columns)}"
         )
 
-    st.markdown(
-        "### Lưu ý"
-    )
-
-    st.warning(
-        "Ứng dụng phân loại lỗi dựa trên dữ liệu đặc trưng "
-        "dạng bảng của bộ dữ liệu Steel Plates Faults. "
-        "Không sử dụng ảnh đầu vào để tự động trích xuất "
-        "đặc trưng."
-    )
 
     if model_errors:
 
@@ -2197,12 +2410,3 @@ elif page == "Thông tin hệ thống":
                 st.write(error)
 
 
-# =========================================================
-# 13. CUỐI TRANG
-# =========================================================
-
-st.sidebar.divider()
-
-st.sidebar.caption(
-    "Steel Defect Classification - Machine Learning"
-)
